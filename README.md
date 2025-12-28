@@ -1,6 +1,6 @@
 
 
 ## Plugins
-A list for the available plugins:
+Available plugins:
 
 - [Log Analyzer](/log-analyzer) - Analyzes server crashes and suggests solutions using AI.
