@@ -14,6 +14,7 @@ use BackedEnum;
 class LogAnalyzerPage extends Page
 {
     protected static BackedEnum|string|null $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationLabel = 'Log Analyzer';
 
     protected string $view = 'log-analyzer::filament.server.pages.log-analyzer-page';
 
