@@ -2,7 +2,7 @@
     "id": "log-analyzer",
     "name": "Log Analyzer",
     "author": "Julijerry",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Analyzes server crashes and suggests solutions using AI.",
     "category": "plugin",
     "url": "https://github.com/Julijerry/Pelican-Plugins/tree/main/log-analyzer",
