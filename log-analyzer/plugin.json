@@ -1,0 +1,17 @@
+{
+    "id": "log-analyzer",
+    "name": "Log Analyzer",
+    "author": "Julijerry",
+    "version": "1.0.0",
+    "description": "Analyzes server crashes and suggests solutions using AI.",
+    "category": "plugin",
+    "url": "https://github.com/Julijerry/Pelican-Plugins/log-analyzer",
+    "update_url": null,
+    "namespace": "Julijerry\\LogAnalyzer",
+    "class": "LogAnalyzerPlugin",
+    "panels": null,
+    "panel_version": null,
+    "composer_packages": {
+        "guzzlehttp/guzzle": "^7.0"
+    }
+}
