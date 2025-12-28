@@ -6,6 +6,7 @@ use App\Contracts\Plugins\HasPluginSettings;
 use App\Traits\EnvironmentWriterTrait;
 use Filament\Contracts\Plugin;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Panel;
 
@@ -32,6 +33,7 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
         //
     }
 
+
     public function getSettingsForm(): array
     {
         return [
@@ -39,6 +41,11 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
                 ->label('Gemini API Key')
                 ->required()
                 ->default(fn () => config('log-analyzer.gemini_api_key')),
+            Select::make('model')
+                ->label('AI Model')
+                ->options(collect(config('log-analyzer.available_models', ['gemini-2.5-flash']))->mapWithKeys(fn($m) => [$m => $m])->toArray())
+                ->required()
+                ->default(fn () => config('log-analyzer.model', 'gemini-2.5-flash')),
         ];
     }
 
@@ -46,6 +53,7 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
     {
         $this->writeToEnvironment([
             'GEMINI_API_KEY' => $data['gemini_api_key'],
+            'LOG_ANALYZER_MODEL' => $data['model'],
         ]);
 
         Notification::make()

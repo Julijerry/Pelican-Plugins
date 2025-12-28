@@ -20,6 +20,12 @@ class LogAnalyzerPage extends Page
     protected static ?string $slug = 'log-analyzer';
 
     public ?string $analysisResult = '';
+    public string $selectedModel = '';
+
+    public function mount(): void
+    {
+        $this->selectedModel = config('log-analyzer.model', 'gemini-2.5-flash');
+    }
 
     public function getTitle(): string
     {
@@ -49,7 +55,7 @@ class LogAnalyzerPage extends Page
             $logs = is_array($logs) ? implode(PHP_EOL, $logs) : $logs;
 
             $analyzer = new LogAnalyzerService();
-            $this->analysisResult = $analyzer->analyze($logs);
+            $this->analysisResult = $analyzer->analyze($logs, $this->selectedModel);
 
             Notification::make()
                 ->title('Analysis complete')
