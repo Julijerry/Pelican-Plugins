@@ -1,4 +1,5 @@
 <x-filament-panels::page>
+    <!-- Model selection moved to global settings. -->
     @if($analysisResult)
         <x-filament::card class="mt-4">
             <h2 class="text-lg font-medium text-gray-900 dark:text-white">
