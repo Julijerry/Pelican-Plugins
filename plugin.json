@@ -6,7 +6,7 @@
     "description": "Analyzes server crashes and suggests solutions using AI.",
     "category": "plugin",
     "url": "https://github.com/Julijerry/Pelican-Plugins/tree/log-analyzer",
-    "update_url": null,
+    "update_url": "https://hub.pelican.dev/plugins/log-analyzer/update.json",
     "namespace": "Julijerry\\LogAnalyzer",
     "class": "LogAnalyzerPlugin",
     "panels": null,
