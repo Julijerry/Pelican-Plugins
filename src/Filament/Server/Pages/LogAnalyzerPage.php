@@ -22,6 +22,13 @@ class LogAnalyzerPage extends Page
 
     public ?string $analysisResult = '';
 
+    public static function getNavigationSort(): ?int
+    {
+        $sort = config('log-analyzer.navigation_sort');
+
+        return $sort !== null && $sort !== '' ? (int) $sort : null;
+    }
+
     public function getTitle(): string
     {
         return 'Log Analyzer';

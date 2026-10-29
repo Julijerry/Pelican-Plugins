@@ -23,6 +23,13 @@ class LogAnalyzerPage extends Page implements HasForms
     public ?string $logContent = '';
     public ?string $analysisResult = '';
 
+    public static function getNavigationSort(): ?int
+    {
+        $sort = config('log-analyzer.navigation_sort');
+
+        return $sort !== null && $sort !== '' ? (int) $sort : null;
+    }
+
     public function mount(): void
     {
         $this->form->fill([

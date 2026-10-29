@@ -36,12 +36,16 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
 
     public function getSettingsFormData(): array
     {
+        $currentSort = config('log-analyzer.navigation_sort');
+
         return [
             'provider' => config('log-analyzer.provider', 'gemini'),
             'api_key' => config('log-analyzer.api_key') ?: config('log-analyzer.gemini_api_key'),
             'base_url' => config('log-analyzer.base_url', 'https://api.openai.com/v1'),
             'model' => config('log-analyzer.model', 'gemini-3.5-flash'),
             'custom_model' => config('log-analyzer.custom_model'),
+            'navigation_position' => $this->resolveNavigationPosition($currentSort),
+            'navigation_sort' => $currentSort,
         ];
     }
 
@@ -95,6 +99,39 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
                 ->visible(fn (Get $get) => ($get('model') ?? '') === 'custom' || ($get('provider') ?? '') === 'openai_compatible')
                 ->required(fn (Get $get) => ($get('model') ?? '') === 'custom' || ($get('provider') ?? '') === 'openai_compatible')
                 ->default(fn () => config('log-analyzer.custom_model')),
+
+            Select::make('navigation_position')
+                ->label('Sidebar Navigation Position')
+                ->options([
+                    'top' => 'Top (Above Console)',
+                    'after_console' => 'After Console',
+                    'after_files' => 'After Files',
+                    'bottom' => 'Bottom (Below Settings & Webhooks)',
+                    'custom' => 'Custom position number…',
+                ])
+                ->required()
+                ->live()
+                ->afterStateUpdated(function (callable $set, ?string $state): void {
+                    if ($state === 'top') {
+                        $set('navigation_sort', -1);
+                    } elseif ($state === 'after_console') {
+                        $set('navigation_sort', 1);
+                    } elseif ($state === 'after_files') {
+                        $set('navigation_sort', 2);
+                    } elseif ($state === 'bottom') {
+                        $set('navigation_sort', 100);
+                    }
+                })
+                ->default(fn () => $this->resolveNavigationPosition(config('log-analyzer.navigation_sort')))
+                ->helperText('Position of Log Analyzer in the left server sidebar navigation.'),
+
+            TextInput::make('navigation_sort')
+                ->label('Custom Sort Number')
+                ->helperText('Exact sort order integer. Lower numbers appear higher up (e.g. -1 for top, 1 for after Console, 100 for bottom).')
+                ->numeric()
+                ->visible(fn (Get $get) => ($get('navigation_position') ?? '') === 'custom')
+                ->required(fn (Get $get) => ($get('navigation_position') ?? '') === 'custom')
+                ->default(fn () => config('log-analyzer.navigation_sort')),
         ];
     }
 
@@ -107,11 +144,24 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
             $model = 'custom';
         }
 
+        $position = $data['navigation_position'] ?? 'top';
+        $navigationSort = match ($position) {
+            'top' => -1,
+            'after_console' => 1,
+            'after_files' => 2,
+            'bottom' => 100,
+            'custom' => isset($data['navigation_sort']) && $data['navigation_sort'] !== ''
+                ? (int) $data['navigation_sort']
+                : null,
+            default => -1,
+        };
+
         $payload = [
             'LOG_ANALYZER_PROVIDER' => $data['provider'],
             'LOG_ANALYZER_API_KEY' => $data['api_key'],
             'LOG_ANALYZER_MODEL' => $model,
             'LOG_ANALYZER_CUSTOM_MODEL' => $customModel ?? '',
+            'LOG_ANALYZER_NAVIGATION_SORT' => $navigationSort !== null ? (string) $navigationSort : '',
         ];
 
         if (($data['provider'] ?? '') === 'openai_compatible') {
@@ -136,5 +186,19 @@ class LogAnalyzerPlugin implements HasPluginSettings, Plugin
         $models = config("log-analyzer.providers.{$provider}.models", []);
 
         return array_merge($models, ['custom' => 'Custom model…']);
+    }
+
+    public function resolveNavigationPosition(?int $sort): string
+    {
+        if ($sort === null || $sort === -1) {
+            return 'top';
+        }
+
+        return match ($sort) {
+            1 => 'after_console',
+            2 => 'after_files',
+            100 => 'bottom',
+            default => 'custom',
+        };
     }
 }

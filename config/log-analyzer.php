@@ -16,6 +16,11 @@ return [
     // Used when model === "custom"
     'custom_model' => env('LOG_ANALYZER_CUSTOM_MODEL'),
 
+    // Sidebar navigation sort order (null = default / top)
+    'navigation_sort' => env('LOG_ANALYZER_NAVIGATION_SORT') !== null && env('LOG_ANALYZER_NAVIGATION_SORT') !== ''
+        ? (int) env('LOG_ANALYZER_NAVIGATION_SORT')
+        : null,
+
     // Legacy key kept for older installs
     'gemini_api_key' => env('GEMINI_API_KEY'),
 
